@@ -4,8 +4,7 @@ BLOCK_SIZE = 16
 
 
 class FixedSizeBlockAES:
-    def __init__(self, key: bytes, block_size: int):
-        self.key = key
+    def __init__(self, block_size: int):
         self.block_size = block_size
 
     def encrypt(self, msg: bytes) -> bytes:
@@ -35,34 +34,34 @@ class FixedSizeBlockAES:
 
 
 class ECB(FixedSizeBlockAES):
+    def __init__(self, key: bytes, block_size: int):
+        super(ECB, self).__init__(block_size)
+        self.cipher = AES.new(key, AES.MODE_ECB)
+
     def encrypt(self, msg: bytes) -> bytes:
-        cipher = AES.new(self.key, AES.MODE_ECB)
-        return cipher.encrypt(msg)
+        return self.cipher.encrypt(msg)
 
     def decrypt(self, msg: bytes) -> bytes:
-        cipher = AES.new(self.key, AES.MODE_ECB)
-        return cipher.decrypt(msg)
+        return self.cipher.decrypt(msg)
 
 
 class CBC(FixedSizeBlockAES):
     def __init__(self, key: bytes, block_size: int, iv: bytes):
-        super(CBC, self).__init__(key, block_size)
-        self.iv = iv
+        super(CBC, self).__init__(block_size)
+        self.cipher = AES.new(key, AES.MODE_CBC, iv)
 
     def encrypt(self, msg: bytes) -> bytes:
-        cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
-        return cipher.encrypt(msg)
+        return self.cipher.encrypt(msg)
 
     def decrypt(self, msg: bytes) -> bytes:
-        cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
-        return cipher.decrypt(msg)
+        return self.cipher.decrypt(msg)
 
 
 def main():
     alg = 'ECB'
     iv = b'1111111111111111'
     key = b'Sixteen byte key'
-    prefix_name = '200Mb'
+    prefix_name = '50Mb'
     input_file = f'input/{prefix_name}.txt'
     encrypted_file = f'{prefix_name}-{alg}.enc.txt'
     decrypted_file = f'{prefix_name}-{alg}.dec.txt'
