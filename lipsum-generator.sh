@@ -37,9 +37,9 @@ else
 fi
 
 ABSOLUTE_SIZE=$((SIZE * MULTIPLIER))
-OUTPUT_FILE_NAME="${SIZE}${UNIT}b.txt"
+OUTPUT_FILE_NAME="input/${SIZE}${UNIT}b.txt"
 
 for (( i=0; i<$ABSOLUTE_SIZE; i++ ))
 do
-    cat 1Kb.txt >> $OUTPUT_FILE_NAME
+    cat input/1Kb.txt >> $OUTPUT_FILE_NAME
 done

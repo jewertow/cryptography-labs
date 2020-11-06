@@ -1,6 +1,6 @@
 from Crypto.Cipher import AES
 
-BLOCK_SIZE = 32
+BLOCK_SIZE = 16
 
 
 def encrypt_ecb(msg: bytes, key_str: str) -> bytes:
@@ -9,9 +9,21 @@ def encrypt_ecb(msg: bytes, key_str: str) -> bytes:
     return cipher.encrypt(msg)
 
 
+def encrypt_cbc(msg: bytes, key_str: str) -> bytes:
+    key = str.encode(key_str)
+    cipher = AES.new(key, AES.MODE_CBC, iv=b'1111111111111111')
+    return cipher.encrypt(msg)
+
+
 def decrypt_ecb(msg: bytes, key_str: str) -> bytes:
     key = str.encode(key_str)
     cipher = AES.new(key, AES.MODE_ECB)
+    return cipher.decrypt(msg)
+
+
+def decrypt_cbc(msg: bytes, key_str: str) -> bytes:
+    key = str.encode(key_str)
+    cipher = AES.new(key, AES.MODE_CBC, iv=b'1111111111111111')
     return cipher.decrypt(msg)
 
 
@@ -46,12 +58,20 @@ def _to_blocks(string):
 
 
 def main():
+    alg = 'ECB'
     key = 'Sixteen byte key'
-    input_file_name = 'input/1Kb.txt'
-    encrypted_file_name = '1Kb.enc.txt'
-    decrypted_file_name = '1Kb.dec.txt'
-    encrypt_file(input_file_name, encrypted_file_name, key, encrypt=encrypt_ecb)
-    decrypt_file(encrypted_file_name, decrypted_file_name, key, decrypt=decrypt_ecb)
+    prefix_name = '1Kb'
+    input_file_name = f'input/{prefix_name}.txt'
+    encrypted_file_name = f'{prefix_name}-{alg}.enc.txt'
+    decrypted_file_name = f'{prefix_name}-{alg}.dec.txt'
+    if alg == 'ECB':
+        encrypt_file(input_file_name, encrypted_file_name, key, encrypt=encrypt_ecb)
+        decrypt_file(encrypted_file_name, decrypted_file_name, key, decrypt=decrypt_ecb)
+    elif alg == 'CBC':
+        encrypt_file(input_file_name, encrypted_file_name, key, encrypt=encrypt_cbc)
+        decrypt_file(encrypted_file_name, decrypted_file_name, key, decrypt=decrypt_cbc)
+    else:
+        raise RuntimeError(f'Unknown algorithm: {alg}')
 
 
 if __name__ == '__main__':
