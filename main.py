@@ -11,17 +11,17 @@ class AlgAES:
     def decrypt(self, msg: bytes) -> bytes:
         pass
 
-    def execute(self, input_file: str, encrypted_file: str, decrypted_file: str):
+    def transform_file(self, input_file: str, output_file: str, aes_fn):
         pass
+
+    def execute(self, input_file: str, encrypted_file: str, decrypted_file: str):
+        self.transform_file(input_file, encrypted_file, self.encrypt)
+        self.transform_file(encrypted_file, decrypted_file, self.decrypt)
 
 
 class FixedSizeBlockAES(AlgAES):
     def __init__(self, block_size: int):
         self.block_size = block_size
-
-    def execute(self, input_file: str, encrypted_file: str, decrypted_file: str):
-        self.transform_file(input_file, encrypted_file, self.encrypt)
-        self.transform_file(encrypted_file, decrypted_file, self.decrypt)
 
     def transform_file(self, input_file: str, output_file: str, aes_fn):
         with open(input_file, 'rb') as f:
@@ -37,6 +37,15 @@ class FixedSizeBlockAES(AlgAES):
 
     def _to_blocks(self, string):
         return [string[i:i + self.block_size] for i in range(0, len(string), self.block_size)]
+
+
+class StreamAES(AlgAES):
+    def transform_file(self, input_file: str, output_file: str, aes_fn):
+        with open(input_file, 'rb') as f:
+            file_content = f.read()
+        result = aes_fn(file_content)
+        with open(output_file, 'wb') as f:
+            f.write(result)
 
 
 class ECB(FixedSizeBlockAES):
@@ -64,7 +73,19 @@ class CBC(FixedSizeBlockAES):
         return self.dec_cipher.decrypt(msg)
 
 
-class CTR(AlgAES):
+class CFB(StreamAES):
+    def __init__(self, key: bytes, iv: bytes):
+        self.enc_cipher = AES.new(key, AES.MODE_CFB, iv)
+        self.dec_cipher = AES.new(key, AES.MODE_CFB, iv)
+
+    def encrypt(self, msg: bytes) -> bytes:
+        return self.enc_cipher.encrypt(msg)
+
+    def decrypt(self, msg: bytes) -> bytes:
+        return self.dec_cipher.decrypt(msg)
+
+
+class CTR(StreamAES):
     def __init__(self, key: bytes):
         # prefix == nonce
         self.enc_cipher = AES.new(key, AES.MODE_CTR, counter=Counter.new(64, prefix=b'12345678'))
@@ -75,17 +96,6 @@ class CTR(AlgAES):
 
     def decrypt(self, msg: bytes) -> bytes:
         return self.dec_cipher.decrypt(msg)
-
-    def execute(self, input_file: str, encrypted_file: str, decrypted_file: str):
-        self.transform_file(input_file, encrypted_file, self.encrypt)
-        self.transform_file(encrypted_file, decrypted_file, self.decrypt)
-
-    def transform_file(self, input_file: str, output_file: str, aes_fn):
-        with open(input_file, 'rb') as f:
-            file_content = f.read()
-        result = aes_fn(file_content)
-        with open(output_file, 'wb') as f:
-            f.write(result)
 
 
 def execute_algorithm(alg: str, file: str):
@@ -103,12 +113,15 @@ def execute_algorithm(alg: str, file: str):
     elif alg == 'CTR':
         ctr = CTR(key)
         ctr.execute(input_file, encrypted_file, decrypted_file)
+    elif alg == 'CFB':
+        cfb = CFB(key, iv)
+        cfb.execute(input_file, encrypted_file, decrypted_file)
     else:
         raise RuntimeError(f'Unknown algorithm: {alg}')
 
 
 if __name__ == '__main__':
-    algorithms = ['ECB', 'CBC', 'CTR']
+    algorithms = ['ECB', 'CBC', 'CTR', 'CFB']
     files = ['1Kb', '1Mb', '50Mb', '100Mb', '200Mb']
     for a in algorithms:
         print(f'Algorithm: {a}')
