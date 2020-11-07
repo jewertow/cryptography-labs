@@ -1,0 +1,38 @@
+ECB:
+diff input/1Kb.txt destroyed/1Kb-ECB.txt
+2,3c2
+< Sed sit amet odio nec dolor rutrum porta.
+< Quisque eu eros pharetra, euismod neque vitae, congue mi.
+---
+> Sed sit amet odio nec dolor rutrum portP�[�����*�
+                                                    �OVos pharetra, euismod neque vitae, congue mi.
+
+CBC:
+diff input/1Kb.txt destroyed/1Kb-CBC.txt
+2,3c2
+< Sed sit amet odio nec dolor rutrum porta.
+< Quisque eu eros pharetra, euismod neque vitae, congue mi.
+---
+> Sed sit amet odio nec dolor rutrum porte��:|�'�@jk�#��os p6aretra, euismod neque vitae, congue mi.
+
+
+CFB:
+diff input/1Kb.txt destroyed/1Kb-CFB.txt
+3c3
+< Quisque eu eros pharetra, euismod neque vitae, congue mi.
+---
+> Q���:�-[�c��5�aretra, euismod neque vitae, congue mi.
+
+OFB:
+diff input/1Kb.txt destroyed/1Kb-OFB.txt
+3c3
+< Quisque eu eros pharetra, euismod neque vitae, congue mi.
+---
+> Q���:�-[�c��5�aretra, euismod neque vitae, congue mi.
+
+CTR:
+diff input/1Kb.txt destroyed/1Kb-CTR.txt
+3c3
+< Quisque eu eros pharetra, euismod neque vitae, congue mi.
+---
+> Q�isque eu eros pharetra, euismod neque vitae, congue mi.
