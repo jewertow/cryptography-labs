@@ -85,9 +85,20 @@ class CFB(StreamAES):
         return self.dec_cipher.decrypt(msg)
 
 
+class OFB(StreamAES):
+    def __init__(self, key: bytes, iv: bytes):
+        self.enc_cipher = AES.new(key, AES.MODE_CFB, iv)
+        self.dec_cipher = AES.new(key, AES.MODE_CFB, iv)
+
+    def encrypt(self, msg: bytes) -> bytes:
+        return self.enc_cipher.encrypt(msg)
+
+    def decrypt(self, msg: bytes) -> bytes:
+        return self.dec_cipher.decrypt(msg)
+
+
 class CTR(StreamAES):
     def __init__(self, key: bytes):
-        # prefix == nonce
         self.enc_cipher = AES.new(key, AES.MODE_CTR, counter=Counter.new(64, prefix=b'12345678'))
         self.dec_cipher = AES.new(key, AES.MODE_CTR, counter=Counter.new(64, prefix=b'12345678'))
 
@@ -110,18 +121,21 @@ def execute_algorithm(alg: str, file: str):
     elif alg == 'CBC':
         cbc = CBC(key, BLOCK_SIZE, iv)
         cbc.execute(input_file, encrypted_file, decrypted_file)
-    elif alg == 'CTR':
-        ctr = CTR(key)
-        ctr.execute(input_file, encrypted_file, decrypted_file)
     elif alg == 'CFB':
         cfb = CFB(key, iv)
         cfb.execute(input_file, encrypted_file, decrypted_file)
+    elif alg == 'OFB':
+        ofb = OFB(key, iv)
+        ofb.execute(input_file, encrypted_file, decrypted_file)
+    elif alg == 'CTR':
+        ctr = CTR(key)
+        ctr.execute(input_file, encrypted_file, decrypted_file)
     else:
         raise RuntimeError(f'Unknown algorithm: {alg}')
 
 
 if __name__ == '__main__':
-    algorithms = ['ECB', 'CBC', 'CTR', 'CFB']
+    algorithms = ['ECB', 'CBC', 'CFB', 'OFB', 'CTR']
     files = ['1Kb', '1Mb', '50Mb', '100Mb', '200Mb']
     for a in algorithms:
         print(f'Algorithm: {a}')
