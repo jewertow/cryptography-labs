@@ -4,19 +4,17 @@ from sympy import isprime, nextprime
 from typing import List
 
 
-def run_bbs(p: int, q: int, size: int) -> List[int]:
+def generate_pseudo_random_string(p: int, q: int, size: int) -> (int, int, List[int]):
     _validate_values(p, q)
     n = p * q
-    print(n)
     x = _find_x(n)
-    print(x)
     bit_values = []
     for _ in range(size):
         x = (x * x) % n
         print(x)
         bit = x % 2
         bit_values.append(bit)
-    return bit_values
+    return n, x, bit_values
 
 
 def find_next_usable_prime(x):
@@ -44,7 +42,6 @@ def is_congruent(x: int) -> bool:
 
 
 def _find_x(n) -> int:
-    seed(1e10)
     x = randint(1, int(1e10))
     while not _are_relatively_prime(n, x):
         x = randint(1, int(1e10))
