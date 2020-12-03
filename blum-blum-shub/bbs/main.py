@@ -1,5 +1,5 @@
 from bbs import find_next_prime, generate_pseudo_random_string
-from fips_tests import single_bit_test, series_test
+from fips_tests import single_bit_test, series_test, long_series_test
 import random
 
 DEBUG = False
@@ -23,7 +23,7 @@ def main():
     print(f'x = {x}')
 
     print('------------------')
-    print('Test pojedynczych bitów')
+    print('Test pojedynczych bitów:')
     single_bits_counter, passed = single_bit_test(random_bits_string)
     print(f'Liczba bitów równych 1: {single_bits_counter}')
     if passed:
@@ -32,7 +32,7 @@ def main():
         print('Test niezaliczony')
 
     print('------------------')
-    print('Test serii')
+    print('Test serii:')
     results, passed = series_test(random_bits_string)
     print(results)
     if passed:
@@ -40,10 +40,19 @@ def main():
     else:
         print('Test niezaliczony')
 
-    suma = 0
+    series_counter_sum = 0
     for key, value in results.items():
-        suma += (key * value)
-    print(suma)
+        series_counter_sum += (key * value)
+    if series_counter_sum != 20_000:
+        raise RuntimeError(f'Sum of series counters is not equal to 20 000!. sum = {series_counter_sum}')
+
+    print('------------------')
+    print('Test długiej serii:')
+    passed = long_series_test(results)
+    if passed:
+        print('Test zaliczony')
+    else:
+        print('Test niezaliczony')
 
 
 if __name__ == '__main__':

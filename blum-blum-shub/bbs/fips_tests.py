@@ -31,6 +31,13 @@ def series_test(string: List[int]) -> (dict, bool):
     return results, _verify_length_of_series(results)
 
 
+def long_series_test(results: dict) -> bool:
+    for key, value in results.items():
+        if key >= 26:
+            return False
+    return True
+
+
 def _verify_length_of_series(results: dict) -> bool:
     return 2315 < results.get(1, 0) < 2685 \
         and 1114 < results.get(2, 0) < 1386 \
@@ -38,4 +45,3 @@ def _verify_length_of_series(results: dict) -> bool:
         and 240 < results.get(4, 0) < 384 \
         and 103 < results.get(5, 0) < 209 \
         and 103 < results.get(6, 0) < 209
-
