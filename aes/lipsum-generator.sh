@@ -41,5 +41,5 @@ OUTPUT_FILE_NAME="input/${SIZE}${UNIT}b.txt"
 
 for (( i=0; i<$ABSOLUTE_SIZE; i++ ))
 do
-    cat input/1Kb.txt >> $OUTPUT_FILE_NAME
+    cat 1Kb.txt >> $OUTPUT_FILE_NAME
 done

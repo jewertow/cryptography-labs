@@ -12,7 +12,7 @@ def destroy_decrypted_file(alg: str, file: str):
     iv = b'1122334455667788'
     block_size = 16
     encrypted_file = f'encrypted/{file}-{alg}.txt'
-    destroyed_file = f'destroyed/{file}-{alg}.txt'
+    destroyed_file = f'damaged/{file}-{alg}.txt'
     destroy_random_byte(encrypted_file)
     if alg == 'ECB':
         ecb = ECB(key, block_size)
