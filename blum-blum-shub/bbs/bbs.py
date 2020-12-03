@@ -11,13 +11,12 @@ def generate_pseudo_random_string(p: int, q: int, size: int) -> (int, int, List[
     bit_values = []
     for _ in range(size):
         x = (x * x) % n
-        print(x)
         bit = x % 2
         bit_values.append(bit)
     return n, x, bit_values
 
 
-def find_next_usable_prime(x):
+def find_next_prime(x):
     p = nextprime(x)
     while p % 4 != 3:
         p = nextprime(p)
