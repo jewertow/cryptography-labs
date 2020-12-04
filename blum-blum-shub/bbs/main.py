@@ -1,5 +1,5 @@
 from bbs import find_next_prime, generate_pseudo_random_string
-from fips_tests import single_bit_test, series_test, long_series_test
+from fips_tests import single_bit_test, series_test, long_series_test, poker_test, _divide_into_segments, _segments_to_int_values
 import random
 
 DEBUG = False
@@ -26,29 +26,27 @@ def main():
     print('Test pojedynczych bitów:')
     single_bits_counter, passed = single_bit_test(random_bits_string)
     print(f'Liczba bitów równych 1: {single_bits_counter}')
-    if passed:
-        print('Test zaliczony')
-    else:
-        print('Test niezaliczony')
+    print_test_result(passed)
 
     print('------------------')
     print('Test serii:')
     results, passed = series_test(random_bits_string)
     print(results)
-    if passed:
-        print('Test zaliczony')
-    else:
-        print('Test niezaliczony')
-
-    series_counter_sum = 0
-    for key, value in results.items():
-        series_counter_sum += (key * value)
-    if series_counter_sum != 20_000:
-        raise RuntimeError(f'Sum of series counters is not equal to 20 000!. sum = {series_counter_sum}')
+    print_test_result(passed)
 
     print('------------------')
     print('Test długiej serii:')
     passed = long_series_test(results)
+    print_test_result(passed)
+
+    print('------------------')
+    print('Test pokerowy:')
+    poker_test_value, passed = poker_test(random_bits_string)
+    print(f'Wynik testu pokerowego: {poker_test_value}')
+    print_test_result(passed)
+
+
+def print_test_result(passed: bool):
     if passed:
         print('Test zaliczony')
     else:
